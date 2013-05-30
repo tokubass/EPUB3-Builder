@@ -5,7 +5,7 @@ use EPUB3::Builder;
 use File::Basename;
 
 subtest 'build_opf' => sub {
-    my $builder =  EPUB3::Builder->new({ output => '.' });
+    my $builder =  EPUB3::Builder->new;
     my $dir = 't/var/denden/OEBPS';
 
     $builder->multi_set({
@@ -14,7 +14,7 @@ subtest 'build_opf' => sub {
     });
 
     $builder->multi_add({
-        document => [
+        documents => [
             "$dir/bodymatter_0_0.xhtml",
             "$dir/bodymatter_0_1.xhtml",
             "$dir/bodymatter_0_2.xhtml",

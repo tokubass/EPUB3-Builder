@@ -5,9 +5,7 @@ use EPUB3::Builder;
 use File::Temp qw/ tempfile /;
 
 subtest 'build_epub' => sub {
-    my ($fh, $output) = tempfile( SUFFIX => '.epub');
-    my $builder =  EPUB3::Builder->new({ output =>  $output });
-
+    my $builder =  EPUB3::Builder->new;
     my $metadata = $builder->opf->metadata;
     $metadata->author('author');
     $metadata->title('title');
@@ -21,7 +19,7 @@ subtest 'build_epub' => sub {
     });
 
     $builder->multi_add({
-        document => [
+        documents => [
             "$dir/cover.xhtml",
             "$dir/bodymatter_0_0.xhtml",
             "$dir/bodymatter_0_1.xhtml",
@@ -31,14 +29,14 @@ subtest 'build_epub' => sub {
             "$dir/bodymatter_0_5.xhtml",
             "$dir/bodymatter_0_6.xhtml",
         ],
-        item => [
+        items => [
             "$dir/fig01.png",
             "$dir/style.css",
         ],
     });
 
-    $builder->build;
-    $builder->pack;
+    my ($fh, $output) = tempfile( SUFFIX => '.epub' );
+    $builder->output({ path => $output });
     unlink $output;
     ok(1);
 };

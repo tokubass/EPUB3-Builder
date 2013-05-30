@@ -1,7 +1,7 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "generate EPUB3 file",
    "author" : [
-      "tokubass <tokubass@cpan.org>"
+      "tokubass"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v0.4.5, CPAN::Meta::Converter version 2.130880",
@@ -42,15 +42,37 @@
       },
       "runtime" : {
          "requires" : {
+            "Carp" : "0",
+            "Class::Accessor::Lite" : "0",
+            "Data::UUID" : "0",
+            "File::Slurp" : "0",
+            "Mouse::Util::TypeConstraints" : "0",
+            "Smart::Args" : "0",
+            "parent" : "0",
             "perl" : "5.008005"
          }
       },
       "test" : {
          "requires" : {
+            "HTML::Tidy::libXML" : "0",
             "Test::More" : "0.98"
          }
       }
    },
    "release_status" : "unstable",
-   "version" : "0.01"
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/tokubass/EPUB3-Builder/issues"
+      },
+      "homepage" : "https://github.com/tokubass/EPUB3-Builder",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/tokubass/EPUB3-Builder.git",
+         "web" : "https://github.com/tokubass/EPUB3-Builder"
+      }
+   },
+   "version" : "0.01",
+   "x_contributors" : [
+      "tokubass <tokubass@cpan.org>"
+   ]
 }

@@ -4,7 +4,7 @@ use warnings;
 use Smart::Args;
 use File::Slurp qw/ read_file write_file /;
 use EPUB3::Builder::Util;
-use Class::Accessor::Lite rw => [qw/ dir path id href /];
+use Class::Accessor::Lite rw => [qw/ dir path id href attr /];
 
 sub new {
     args(
@@ -16,13 +16,19 @@ sub new {
         path => '',
         href => '',
         media_type => '',
+        attr => {},
     }, $class;
 }
 
 sub add {
     my $self = shift;
-    my $file_path = $_[0]->{file_path};
-    $file_path ? $self->save_file(@_) : $self->save_data(@_);
+    my $args = shift || {};
+    my $file_path = $args->{file_path};
+    my $attr = delete $args->{attr};
+
+    $self->attr( $attr ) if $attr;
+
+    $file_path ? $self->save_file($args) : $self->save_data($args);
 
     return $self;
 }
@@ -31,8 +37,8 @@ sub save_file {
     args(
         my $self      => 'Object',
         my $file_path => { isa => 'Str'},
-        my $save_name => { isa => 'Str',   optional => 1 },
-        my $option    => { isa => 'HashRef', default => {} },
+        my $save_name => { isa => 'Str',     optional => 1 },
+        my $option    => { isa => 'HashRef', default  => {} },
     );
 
     my $data = EPUB3::Builder::Util->load_file({

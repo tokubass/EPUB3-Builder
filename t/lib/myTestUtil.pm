@@ -1,20 +1,19 @@
 package myTestUtil;
 use strict;
 use warnings;
-use HTML::Tidy;
+use HTML::Tidy::LibXML;
 use Test::More;
 use Exporter qw/import/;
 
 our @EXPORT_OK = qw/is_after_tidy/;
 
 sub is_after_tidy {
-    Test::More::is(
-        HTML::Tidy->new->clean($_[0]),
-        HTML::Tidy->new->clean($_[1]),
+    is(
+        HTML::Tidy::libXML->new->clean($_[0], 'utf8', 1),
+        HTML::Tidy::libXML->new->clean($_[1], 'utf8', 1),
         $_[2],
     );
 }
 
 1;
-
 

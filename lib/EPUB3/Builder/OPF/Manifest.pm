@@ -25,8 +25,7 @@ sub add {
 sub set_uniq_id {
     my $self = shift;
     my $item = shift;
-
-    $item->id( $self->item_count . '_' . File::Basename::basename($item->href) );
+    $item->id(sprintf("_%s_%s",  $self->item_count , File::Basename::basename($item->href) ) );
 }
 
 sub item_list {

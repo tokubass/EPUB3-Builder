@@ -7,18 +7,17 @@ use File::Slurp qw/ read_file write_file /;
 use Carp;
 use EPUB3::Builder::Container;
 use EPUB3::Builder::OPF;
-use EPUB3::Builder::Item::Image;
-use EPUB3::Builder::Item::Document;
+use Class::Accessor::Lite rw => [qw/ cover_image  navi /];
+use Archive::Zip qw/:ERROR_CODES/;
 
 use constant DEBUG => $ENV{epub_builder_debug} ? 1 : 0;
 
 our $VERSION = "0.01";
 
-
 sub new {
     args(
         my $class  => 'ClassName',
-        my $output => { isa => 'Str', optional => DEBUG ? 1 : 0 },
+        my $output => { isa => 'Str', optional => 1 },
     );
 
     my $self = bless {
@@ -62,28 +61,29 @@ sub opf {
 sub container {
     my $self = shift;
     $self->{container} ||=
-        EPUB3::Builder::Container->new({ base_dir => $self->dir }); 
+        EPUB3::Builder::Container->new({ base_dir => $self->dir });
 }
 
-sub image_item { EPUB3::Builder::Item::Image->new({ dir => shift->opf->dir }) }
 
-sub cover_img {
+sub item          { require EPUB3::Builder::Item;           EPUB3::Builder::Item->new({ dir => shift->opf->dir }) }
+sub image_item    { require EPUB3::Builder::Item::Image;    EPUB3::Builder::Item::Image->new({ dir => shift->opf->dir }) }
+sub document_item { require EPUB3::Builder::Item::Document; EPUB3::Builder::Item::Document->new({ dir => shift->opf->dir }) }
+{ no warnings; *css_item = \&item; };
+
+sub add_image {
     my $self = shift;
-    $self->{cover_img} = shift if (@_);
-    $self->{cover_img};
+    my $img = $self->image_item->add(@_);
+    $self->opf->add($img);
 }
 
-sub set_cover_img {
+sub set_cover_image {
     my $self = shift;
-
     my $cover = $self->image_item->add(@_);
     $cover->is_cover(1);
 
-    $self->cover_img($cover);
+    $self->cover_image($cover);
     $self->opf->add($cover);
 }
-
-sub item { EPUB3::Builder::Item->new({ dir => shift->opf->dir }) }
 
 sub add_item {
     my $self = shift;
@@ -91,16 +91,7 @@ sub add_item {
     $self->opf->add($item);
 }
 
-
-{
-no warnings;
-*css_item = \&item;
-*add_css = \&add_item;
-}
-
-
-sub document_item { EPUB3::Builder::Item::Document->new({ dir => shift->opf->dir }) }
-
+{ no warnings; *add_css = \&add_item; }
 
 sub add_document {
     my $self = shift;
@@ -108,16 +99,13 @@ sub add_document {
     $self->opf->add($doc);
 }
 
-sub navi {
-    my $self = shift;
-    $self->{navi} = shift if (@_);
-    $self->{navi};
-}
-
 sub set_navi {
     my $self = shift;
+    my $args = shift || {};
+    $args->{attr}{properties} ||= "nav";
+    $args->{attr}{linear} ||= "no";
 
-    my $navi = $self->document_item->add(@_);
+    my $navi = $self->document_item->add($args);
     $navi->is_navi(1);
 
     $self->navi($navi);
@@ -126,37 +114,35 @@ sub set_navi {
 
 sub multi_set {
     args(
-        my $self  => 'Object',
+        my $self      => 'Object',
+        my $navi      => { isa => 'Str', optional => 1 },
         my $cover_img => { isa => 'Str', optional => 1 },
-        my $navi  => { isa => 'Str', optional => 1 },
     );
 
-    $self->set_cover_img({ file_path => $cover_img })  if $cover_img;
+    $self->set_cover_image({ file_path => $cover_img })  if $cover_img;
     $self->set_navi({ file_path => $navi  })  if $navi;
 }
 
 sub multi_add {
     args(
-        my $self  => 'Object',
-        my $document => { isa => 'ArrayRef[Str]', default => [] },
-        my $item     => { isa => 'ArrayRef[Str]', default => [] },
-
+        my $self      => 'Object',
+        my $items     => { isa => 'ArrayRef[Str]', default => [] },
+        my $documents => { isa => 'ArrayRef[Str]', default => [] },
+        my $attr      => { isa => 'HashRef',       default => [] },
     );
 
-    for my $doc_path (@$document) {
-        $self->add_document({ file_path => $doc_path });
+    for my $doc_path (@$documents) {
+        $self->add_document({ file_path => $doc_path, attr => {}  });
     }
-    for my $item_path (@$item) {
-        $self->add_item({ file_path => $item_path });
+    for my $item_path (@$items) {
+        $self->add_item({ file_path => $item_path, attr => {} });
     }
 }
 
-use Archive::Zip;
-sub pack {
+sub zip_pack {
     my $self = shift;
     my $zip = Archive::Zip->new();
 
-    # mimetype should come first
     $zip->addString("application/epub+zip", "mimetype");
 
     for my $item ( @{$self->opf->manifest->item_list} ) {
@@ -165,7 +151,24 @@ sub pack {
 
     $zip->addFile($self->opf->path, "OEBPS/content.opf");
     $zip->addFile($self->container->path, "META-INF/container.xml");
-    $zip->writeToFileNamed( $self->{output_path} );
+
+    return $zip;
+}
+
+sub output {
+    args(
+        my $self => 'Object',
+        my $path => { isa => 'Str', optional => 1 },
+    );
+
+    $self->{output_path} = $path if $path;
+
+    $self->build;
+    my $zip = $self->zip_pack;
+    unless ( $zip->writeToFileNamed( $self->{output_path} ) == AZ_OK ) {
+        croak 'write error';
+    }
+
 }
 
 
@@ -176,15 +179,45 @@ __END__
 
 =head1 NAME
 
-EPUB3::Builder - It's new $module
+EPUB3::Builder - generate EPUB3 file
 
 =head1 SYNOPSIS
 
     use EPUB3::Builder;
+    my $builder =  EPUB3::Builder->new;
+
+    # set metadata
+    my $metadata = $builder->opf->metadata;
+    $metadata->author('author');
+    $metadata->title('title');
+    $metadata->lang('ja'); #default is en
+    $metadata->dir('ltr'); #default is ltr
+    $metadata->modified('2013-04-22T08:58:17Z'); #default is current gmtime
+
+    # add book items
+    $builder->multi_set({
+        cover_image => "cover.png",
+        navi        => "nav.xhtml",
+    });
+
+    $builder->multi_add({
+        document => [
+            "cover.xhtml",
+            "1.xhtml",
+            "2.xhtml",
+        ],
+        item => [
+            "test.png",
+            "style.css",
+        ],
+    });
+
+    $builder->output({ path => 'myBook.epub' });
 
 =head1 DESCRIPTION
 
-EPUB3::Builder is ...
+  Build OEBPS/content.opf and META-INF/container.xml, mimetype from your book content.
+  And create Zip archive.
 
 =head1 LICENSE
 

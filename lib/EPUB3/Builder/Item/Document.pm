@@ -2,6 +2,7 @@ package EPUB3::Builder::Item::Document;
 use strict;
 use warnings;
 use parent 'EPUB3::Builder::Item';
+use Class::Accessor::Lite rw => [qw/is_navi/];
 
 sub data {
     my $self = shift;
@@ -24,27 +25,53 @@ sub save_data {
 
 }
 
-sub is_navi {
-    my $self = shift; 
-    $self->{is_navi} = shift if (@_);
-    $self->{is_navi};
-}
+use constant IS_MANIFEST_ATTR => {
+    properties => 1,
+};
 
 sub print_to_manifest {
     my $self = shift;
+    my @basic_attr = (
+        sprintf(q{media-type="%s"}, $self->media_type),
+        sprintf(q{href="%s"},       $self->href),
+        sprintf(q{id="%s"},         $self->id),
+    );
 
-    my $template = $self->is_navi
-        ? qq{  <item media-type="%s" href="%s" id="%s" properties="nav" />\n}
-        : qq{  <item media-type="%s" href="%s" id="%s"  />\n};
+    $self->attr->{properties} = 'nav' if $self->is_navi;
 
-    sprintf($template, $self->media_type, $self->href, $self->id);
+    my @extra_attr;
+    for my $name ( keys %{$self->attr} ) {
+        next unless IS_MANIFEST_ATTR->{$name};
+        push @extra_attr,  sprintf(q{%s="%s"}, $name, $self->attr->{$name} );
+    }
+
+
+    sprintf(
+        "  <item %s />\n",
+        join(' ' => (@basic_attr, @extra_attr))
+    );
 }
+
+use constant IS_SPINE_ATTR => {
+    linear => 1,
+};
 
 sub print_to_spine {
     my $self = shift;
-    my $template = qq{  <itemref idref="%s" />\n};
+    my @basic_attr = (
+        sprintf(q{idref="%s"}, $self->id),
+    );
 
-    sprintf($template, $self->id);
+    my @extra_attr;
+    for my $name ( keys %{$self->attr} ) {
+        next unless IS_SPINE_ATTR->{$name};
+        push @extra_attr,  sprintf(q{%s="%s"}, $name, $self->attr->{$name} );
+    }
+
+    sprintf(
+        "  <itemref %s />\n",
+        join(' ' => (@basic_attr, @extra_attr))
+    );
 }
 
 

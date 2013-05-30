@@ -6,39 +6,39 @@ use File::Basename qw/ basename /;
 use lib 't/lib';
 use myTestUtil qw/ is_after_tidy /;
 
-subtest 'set_cover_img' => sub {
-    my $builder =  EPUB3::Builder->new({ output => '.' });
+subtest 'set_cover_image' => sub {
+    my $builder =  EPUB3::Builder->new;
     my $file_path = 't/var/denden/OEBPS/cover.png';
     my $file_name = basename($file_path);
 
-    $builder->set_cover_img({
+    $builder->set_cover_image({
         file_path => $file_path,
     });
 
-    ok($builder->cover_img->is_cover);
+    ok($builder->cover_image->is_cover);
 
     my $expected =<<"MANIFEST";
 <manifest>
-  <item media-type="image/png" href="$file_path" id="0_$file_name" properties="cover-image" />
+  <item media-type="image/png" href="$file_path" id="_0_$file_name" properties="cover-image" />
 </manifest>
 MANIFEST
 
     is_after_tidy($builder->opf->manifest->build, $expected);
 };
 
-subtest 'set_cover_img_with_save_name' => sub {
-    my $builder =  EPUB3::Builder->new({ output => '.' });
+subtest 'set_cover_image_with_save_name' => sub {
+    my $builder =  EPUB3::Builder->new;
     my $file_path = 't/var/denden/OEBPS/cover.png';
     my $save_name = 'image/cover.png';
     my $file_name = basename($file_path);
 
-    $builder->set_cover_img({
+    $builder->set_cover_image({
         file_path => $file_path,
         save_name => $save_name,
     });
     my $expected =<<"MANIFEST";
 <manifest>
-  <item media-type="image/png" href="$save_name" id="0_$file_name" properties="cover-image" />
+  <item media-type="image/png" href="$save_name" id="_0_$file_name" properties="cover-image" />
 </manifest>
 MANIFEST
 
@@ -47,7 +47,7 @@ MANIFEST
 
 
 subtest 'add_document' => sub {
-    my $builder =  EPUB3::Builder->new({ output => '.' });
+    my $builder =  EPUB3::Builder->new;
     my $file_path = 't/var/denden/OEBPS/bodymatter_0_0.xhtml';
     my $save_name = 'document/bodymatter_0_0.xhtml';
     my $file_name = basename($file_path);
@@ -59,7 +59,7 @@ subtest 'add_document' => sub {
 
     my $expected =<<"MANIFEST";
 <manifest>
-  <item media-type="application/xhtml+xml" href="$save_name" id="0_$file_name"  />
+  <item media-type="application/xhtml+xml" href="$save_name" id="_0_$file_name"  />
 </manifest>
 MANIFEST
 
@@ -67,7 +67,7 @@ MANIFEST
 };
 
 subtest 'set_navi' => sub {
-    my $builder =  EPUB3::Builder->new({ output => '.' });
+    my $builder =  EPUB3::Builder->new;
     my $file_path = 't/var/denden/OEBPS/nav.xhtml';
     my $save_name = 'document/nav.xhtml';
     my $file_name = basename($file_path);
@@ -79,7 +79,7 @@ subtest 'set_navi' => sub {
 
     my $expected =<<"MANIFEST";
 <manifest>
-  <item media-type="application/xhtml+xml" href="$save_name" id="0_$file_name" properties="nav" />
+  <item media-type="application/xhtml+xml" href="$save_name" id="_0_$file_name" properties="nav" />
 </manifest>
 MANIFEST
 
@@ -88,12 +88,12 @@ MANIFEST
 
 
 subtest 'add_multi' => sub {
-    my $builder =  EPUB3::Builder->new({ output => '.' });
+    my $builder =  EPUB3::Builder->new;
     my $file_path = 't/var/denden/OEBPS/cover.png';
     my $save_name = 'image/cover.png';
     my $file_name = basename($file_path);
 
-    $builder->set_cover_img({
+    $builder->set_cover_image({
         file_path => $file_path,
         save_name => $save_name,
     });
@@ -120,9 +120,9 @@ subtest 'add_multi' => sub {
 
     my $expected =<<"MANIFEST";
 <manifest>
-  <item media-type="image/png" href="$save_name" id="0_$file_name" properties="cover-image" />
-  <item media-type="application/xhtml+xml" href="$save_name2" id="1_$file_name2" properties="nav" />
-  <item media-type="application/xhtml+xml" href="$save_name3" id="2_$file_name3"  />
+  <item media-type="image/png" href="$save_name" id="_0_$file_name" properties="cover-image" />
+  <item media-type="application/xhtml+xml" href="$save_name2" id="_1_$file_name2" properties="nav" />
+  <item media-type="application/xhtml+xml" href="$save_name3" id="_2_$file_name3"  />
 </manifest>
 MANIFEST
 
