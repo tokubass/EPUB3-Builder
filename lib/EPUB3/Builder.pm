@@ -5,8 +5,6 @@ use warnings;
 use Smart::Args;
 use File::Slurp qw/ read_file write_file /;
 use Carp;
-use EPUB3::Builder::Container;
-use EPUB3::Builder::OPF;
 use Class::Accessor::Lite rw => [qw/ cover_image  navi /];
 use Archive::Zip qw/:ERROR_CODES/;
 
@@ -48,20 +46,33 @@ sub dir {
 
 sub build {
     my $self = shift;
+
+    unless ($self->navi) {
+        $self->set_navi({
+            data => $self->build_default_navi,
+            save_name => 'navi.xhtml',
+        });
+    }
+
     $self->container->write_file;
     $self->opf->write_file;
 }
 
 sub opf {
     my $self = shift;
-    $self->{opf} ||=
+
+    $self->{opf} ||= do {
+        require EPUB3::Builder::OPF;
         EPUB3::Builder::OPF->new({ base_dir => $self->dir });
+    };
 }
 
 sub container {
     my $self = shift;
-    $self->{container} ||=
+    $self->{container} ||= do {
+        require EPUB3::Builder::Container;
         EPUB3::Builder::Container->new({ base_dir => $self->dir });
+    };
 }
 
 
@@ -97,6 +108,31 @@ sub add_document {
     my $self = shift;
     my $doc = $self->document_item->add(@_);
     $self->opf->add($doc);
+}
+
+sub build_navi {
+    my $self = shift;
+    my $args = shift || {};
+
+    require EPUB3::Builder::Navi;
+    EPUB3::Builder::Navi->new($args)->build;
+}
+
+sub build_default_navi {
+    my $self = shift;
+    my ($seq_number_title, @navi_list);
+
+    for my $item (@{$self->opf->spine->item_list}) {
+        $seq_number_title++;
+        push @navi_list, {
+            title => $seq_number_title,
+            link  => $item->{href},
+        };
+    }
+
+    return $self->build_navi({
+        navi_list => \@navi_list
+    });
 }
 
 sub set_navi {

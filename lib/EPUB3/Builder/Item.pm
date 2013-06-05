@@ -5,7 +5,6 @@ use Smart::Args;
 use File::Slurp qw/ read_file write_file /;
 use EPUB3::Builder::Util;
 use Class::Accessor::Lite rw => [qw/ dir path id href attr /];
-use Encode;
 
 sub new {
     args(
@@ -68,7 +67,7 @@ sub save_data {
     my $save_path = File::Spec->catfile($self->dir, $save_name);
     File::Path::make_path(File::Basename::dirname($save_path));
 
-    write_file($save_path, $option, decode_utf8($data));
+    write_file($save_path, $option, $data);
 
     $self->path($save_path);
     $self->href($save_name);
