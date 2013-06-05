@@ -88,12 +88,9 @@ subtest 'build default navi' => sub {
 <nav id="toc" epub:type="toc">
 <h2>table of contents</h2>
 <ol>
-<li><a href="t/var/denden/OEBPS/cover.png"><span>1</span></a></li>
-<li><a href="t/var/denden/OEBPS/nav.xhtml"><span>2</span></a></li>
-<li><a href="t/var/denden/OEBPS/cover.xhtml"><span>3</span></a></li>
-<li><a href="t/var/denden/OEBPS/bodymatter_0_0.xhtml"><span>4</span></a></li>
-<li><a href="t/var/denden/OEBPS/fig01.png"><span>5</span></a></li>
-<li><a href="t/var/denden/OEBPS/style.css"><span>6</span></a></li>
+<li><a href="t/var/denden/OEBPS/nav.xhtml"><span>1</span></a></li>
+<li><a href="t/var/denden/OEBPS/cover.xhtml"><span>2</span></a></li>
+<li><a href="t/var/denden/OEBPS/bodymatter_0_0.xhtml"><span>3</span></a></li>
 </ol>
 </nav>
 

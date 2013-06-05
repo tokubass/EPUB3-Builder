@@ -126,7 +126,7 @@ sub build_default_navi {
         $seq_number_title++;
         push @navi_list, {
             title => $seq_number_title,
-            link  => $item->{href},
+            link  => $item->href,
         };
     }
 
@@ -141,9 +141,7 @@ sub set_navi {
     $args->{attr}{properties} ||= "nav";
     $args->{attr}{linear} ||= "no";
 
-    my $navi = $self->document_item->add($args);
-    $navi->is_navi(1);
-
+    my $navi = $self->document_item->add_navi($args);
     $self->navi($navi);
     $self->opf->add($navi);
 }

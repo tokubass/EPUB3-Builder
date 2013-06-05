@@ -9,26 +9,29 @@ use myTestUtil qw/ is_after_tidy /;
 subtest 'add_multi' => sub {
     my $builder =  EPUB3::Builder->new;
 
-    my $file_path = 't/var/denden/OEBPS/nav.xhtml';
+    my $file_path = 't/var/denden/OEBPS/bodymatter_0_1.xhtml';
     my $file_name = basename($file_path);
 
-    $builder->set_navi({
-        file_path => $file_path,
-        save_name => 'document/nav.xhtml',
-    });
-
-    my $file_path2 = 't/var/denden/OEBPS/bodymatter_0_1.xhtml';
-    my $file_name2 = basename($file_path2);
-
     $builder->add_document({
-        file_path => $file_path2,
+        file_path => $file_path,
         save_name => 'document/bodymatter_0_1.xhtml',
     });
 
+    $builder->set_cover_image({
+        file_path => "t/var/denden/OEBPS/cover.png",
+    });
+
+    $builder->set_navi({
+        data => $builder->build_default_navi,
+        save_name => 'document/nav.xhtml',
+    });
+
+
+
     my $expected =<<"SPINE";
 <spine page-progression-direction="ltr" >
-  <itemref idref="_0_$file_name" linear="no" />
-  <itemref idref="_1_$file_name2" />
+  <itemref idref="_2_nav.xhtml" linear="no" />
+  <itemref idref="_0_$file_name" />
 </spine>
 SPINE
 

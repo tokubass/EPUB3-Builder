@@ -4,9 +4,15 @@ use warnings;
 use parent 'EPUB3::Builder::Item';
 use Class::Accessor::Lite rw => [qw/is_navi/];
 
+sub add_navi {
+    my $self = shift;
+    $self->is_navi(1);
+    $self->SUPER::add(@_);
+}
+
 sub data {
     my $self = shift;
-    read_file($self->path, { binmode => ':utf8' });
+    read_file($self->path);
 }
 
 sub save_file {

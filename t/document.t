@@ -17,11 +17,19 @@ subtest 'add_document' => sub {
         attr => { linear => 'no' },
     });
 
+    $builder->set_navi({
+        data => $builder->build_default_navi,
+        save_name => 'navi.xhtml',
+    });
+
+
     my $expected =<<"SPINE";
 <spine page-progression-direction="ltr" >
+  <itemref idref="_1_navi.xhtml" linear="no" />
   <itemref idref="_0_$file_name" linear="no" />
 </spine>
 SPINE
+
     is_after_tidy($builder->opf->spine->build, $expected);
 };
 

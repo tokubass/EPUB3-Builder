@@ -17,9 +17,16 @@ subtest 'set_cover_image' => sub {
 
     ok($builder->cover_image->is_cover);
 
+    $builder->set_navi({
+        data => $builder->build_default_navi,
+        save_name => 'navi.xhtml',
+    });
+
+
     my $expected =<<"MANIFEST";
 <manifest>
   <item media-type="image/png" href="$file_path" id="_0_$file_name" properties="cover-image" />
+  <item media-type="application/xhtml+xml" href="navi.xhtml" id="_1_navi.xhtml" properties="nav" />
 </manifest>
 MANIFEST
 
@@ -36,9 +43,16 @@ subtest 'set_cover_image_with_save_name' => sub {
         file_path => $file_path,
         save_name => $save_name,
     });
+
+    $builder->set_navi({
+        data => $builder->build_default_navi,
+        save_name => 'navi.xhtml',
+    });
+
     my $expected =<<"MANIFEST";
 <manifest>
   <item media-type="image/png" href="$save_name" id="_0_$file_name" properties="cover-image" />
+  <item media-type="application/xhtml+xml" href="navi.xhtml" id="_1_navi.xhtml" properties="nav" />
 </manifest>
 MANIFEST
 
@@ -57,9 +71,16 @@ subtest 'add_document' => sub {
         save_name => $save_name,
     });
 
+    $builder->set_navi({
+        data => $builder->build_default_navi,
+        save_name => 'navi.xhtml',
+    });
+
+
     my $expected =<<"MANIFEST";
 <manifest>
   <item media-type="application/xhtml+xml" href="$save_name" id="_0_$file_name"  />
+  <item media-type="application/xhtml+xml" href="navi.xhtml" id="_1_navi.xhtml" properties="nav" />
 </manifest>
 MANIFEST
 
