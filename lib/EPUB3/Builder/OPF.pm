@@ -5,6 +5,7 @@ use warnings;
 use Smart::Args;
 use File::Spec::Functions qw/catfile/;
 use File::Slurp ();
+use Encode;
 
 sub new {
     args(
@@ -74,7 +75,7 @@ OPF
 
 sub write_file {
     my $self = shift;
-    File::Slurp::write_file($self->path, $self->build); 
+    File::Slurp::write_file($self->path, encode_utf8($self->build));
 }
 
 sub metadata {

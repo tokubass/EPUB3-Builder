@@ -13,7 +13,7 @@ sub save_file {
     my $self = shift;
     my $args = shift;
 
-    $self->SUPER::save_file({ %$args, option => {binmode => ':utf8'} });
+    $self->SUPER::save_file($args);
 
 }
 
@@ -21,7 +21,7 @@ sub save_data {
     my $self = shift;
     my $args = shift;
 
-    $self->SUPER::save_data({ %$args, option => {binmode => ':utf8'} });
+    $self->SUPER::save_data($args);
 
 }
 
