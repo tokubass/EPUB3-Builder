@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use parent 'EPUB3::Builder::Item';
 use Class::Accessor::Lite rw => [qw/is_navi/];
+use Encode;
 
 sub add_navi {
     my $self = shift;
@@ -26,6 +27,8 @@ sub save_file {
 sub save_data {
     my $self = shift;
     my $args = shift;
+
+    $args->{data} = encode_utf8($args->{data});
 
     $self->SUPER::save_data($args);
 
