@@ -79,7 +79,7 @@ sub container {
 sub item          { require EPUB3::Builder::Item;           EPUB3::Builder::Item->new({ dir => shift->opf->dir }) }
 sub image_item    { require EPUB3::Builder::Item::Image;    EPUB3::Builder::Item::Image->new({ dir => shift->opf->dir }) }
 sub document_item { require EPUB3::Builder::Item::Document; EPUB3::Builder::Item::Document->new({ dir => shift->opf->dir }) }
-{ no warnings; *css_item = \&item; };
+sub css_item      { require EPUB3::Builder::Item::Css;      EPUB3::Builder::Item::Css->new({ dir => shift->opf->dir }) }
 
 sub add_image {
     my $self = shift;
@@ -102,7 +102,11 @@ sub add_item {
     $self->opf->add($item);
 }
 
-{ no warnings; *add_css = \&add_item; }
+sub add_css {
+    my $self = shift;
+    my $item = $self->css_item->add(@_);
+    $self->opf->add($item);
+}
 
 sub add_document {
     my $self = shift;
