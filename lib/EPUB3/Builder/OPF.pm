@@ -58,15 +58,14 @@ sub build {
     my $metadata = $self->metadata->build;
     my $manifest = $self->manifest->build;
     my $spine = $self->spine->build;
-    my $guide = '';
 
     <<"OPF";
 <?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="identifier0" version="3.0">
+
 $metadata
 $manifest
 $spine
-$guide
 
 </package>
 OPF

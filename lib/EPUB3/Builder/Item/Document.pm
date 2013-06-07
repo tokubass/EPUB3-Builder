@@ -56,7 +56,7 @@ sub print_to_manifest {
 
 
     sprintf(
-        "  <item %s />\n",
+        "<item %s />\n",
         join(' ' => (@basic_attr, @extra_attr))
     );
 }
@@ -78,7 +78,7 @@ sub print_to_spine {
     }
 
     sprintf(
-        "  <itemref %s />\n",
+        "<itemref %s />\n",
         join(' ' => (@basic_attr, @extra_attr))
     );
 }

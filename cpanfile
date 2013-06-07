@@ -10,6 +10,6 @@ requires 'Data::UUID', '0';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
-    requires 'HTML::Tidy::libXML', '0';
+    requires 'XML::Compare', '0';
 };
 

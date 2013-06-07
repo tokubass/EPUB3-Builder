@@ -86,14 +86,14 @@ sub media_type {
 
 sub print_to_manifest {
     my $self = shift;
-    my $template = qq{  <item media-type="%s" href="%s" id="%s"  />\n};
+    my $template = qq{<item media-type="%s" href="%s" id="%s" />\n};
 
     sprintf($template, $self->media_type, $self->href, $self->id);
 }
 
 sub print_to_spine {
     my $self = shift;
-    my $template = qq{  <itemref idref="%s" />\n};
+    my $template = qq{<itemref idref="%s" />\n};
 
     sprintf($template, $self->id);
 }

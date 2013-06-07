@@ -30,8 +30,8 @@ subtest 'add_multi' => sub {
 
     my $expected =<<"SPINE";
 <spine page-progression-direction="ltr" >
-  <itemref idref="_2_nav.xhtml" linear="no" />
-  <itemref idref="_0_$file_name" />
+<itemref idref="_2_nav.xhtml" linear="no" />
+<itemref idref="_0_$file_name"      />
 </spine>
 SPINE
 

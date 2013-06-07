@@ -54,8 +54,8 @@
       },
       "test" : {
          "requires" : {
-            "HTML::Tidy::libXML" : "0",
-            "Test::More" : "0.98"
+            "Test::More" : "0.98",
+            "XML::Compare" : "0"
          }
       }
    },

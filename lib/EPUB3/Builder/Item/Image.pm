@@ -48,8 +48,8 @@ sub is_cover {
 sub print_to_manifest {
     my $self = shift;
     my $template = $self->is_cover
-        ? qq{  <item media-type="%s" href="%s" id="%s" properties="cover-image" />\n}
-        : qq{  <item media-type="%s" href="%s" id="%s"  />\n};
+        ? qq{<item media-type="%s" href="%s" id="%s" properties="cover-image" />\n}
+        : qq{<item media-type="%s" href="%s" id="%s"  />\n};
 
     sprintf($template, $self->media_type, $self->href, $self->id);
 }

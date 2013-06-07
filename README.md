@@ -17,8 +17,8 @@ EPUB3::Builder - generate EPUB3 file
 
     # add book items
     $builder->multi_set({
-        cover_img => "cover.png",
-        navi      => "nav.xhtml",
+        cover_image => "cover.png",
+        navi        => "nav.xhtml",
     });
 
     $builder->multi_add({
