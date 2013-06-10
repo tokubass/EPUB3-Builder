@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Carp;
 use Smart::Args;
+use Class::Accessor::Lite rw => [qw/ cover_image /];
 use File::Basename ();
 
 sub new {
@@ -15,11 +16,17 @@ sub new {
     } => $class;
 }
 
+
+
 sub add {
     my $self = shift;
     my $item = shift or croak '$item is undef';
 
     $self->set_uniq_id($item);
+
+    if ( $item->can('is_cover') && $item->is_cover ) {
+        $self->cover_image($item);
+    }
 
     $item->can('is_nav') && i$item->is_navi
         ? unshift @{$self->{item_list}}, $item

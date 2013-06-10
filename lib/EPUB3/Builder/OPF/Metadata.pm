@@ -3,12 +3,13 @@ use strict;
 use warnings;
 use Smart::Args;
 use Time::Piece;
-use Class::Accessor::Lite rw => [qw/ author title dir lang modified /];
+use Class::Accessor::Lite rw => [qw/ author title dir lang modified manifest/];
 use Text::MicroTemplate::DataSection 'render_mt';
 
 sub new {
     args(
         my $class => 'ClassName',
+        my $manifest => 'Object',
     );
 
     bless {
@@ -18,6 +19,7 @@ sub new {
         dir      => '',
         lang     => '',
         modified => '',
+        manifest => $manifest,
     } => $class;
 }
 
@@ -33,7 +35,7 @@ sub build {
         lang     => $self->lang     || 'en',
         dir      => $self->dir      || 'ltr',
         modified => $self->modified || gmtime()->datetime . 'Z',
-        cover_idref => '_cover.png',
+        cover_image_id => $self->manifest->cover_image->id,
     });
 
 
@@ -62,7 +64,7 @@ __DATA__
   <dc:format>application/epub+zip</dc:format>
   <dc:language><?= $_[0]->{lang} ?></dc:language>
   <meta property="dcterms:modified"><?= $_[0]->{modified} ?></meta>
-  <meta name="cover" content="<?= $_[0]->{cover_idref} ?>" />
+  <meta name="cover" content="<?= $_[0]->{cover_image_id} ?>" />
 ? if ($_[0]->{lang} eq 'ja') {
   <meta property="ebpaj:guide-version">1.1.2</meta>
 ? }

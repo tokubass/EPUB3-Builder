@@ -84,7 +84,9 @@ sub metadata {
 
     $self->{metadata} ||= do{
         require EPUB3::Builder::OPF::Metadata;
-        EPUB3::Builder::OPF::Metadata->new; 
+        EPUB3::Builder::OPF::Metadata->new({
+            manifest => $self->manifest,
+        });
     };
 }
 
@@ -93,7 +95,7 @@ sub manifest {
 
     $self->{manifest} ||= do{
         require EPUB3::Builder::OPF::Manifest;
-        EPUB3::Builder::OPF::Manifest->new; 
+        EPUB3::Builder::OPF::Manifest->new;
     };
 }
 
@@ -102,7 +104,7 @@ sub spine {
 
     $self->{spine} ||= do{
         require EPUB3::Builder::OPF::Spine;
-        EPUB3::Builder::OPF::Spine->new; 
+        EPUB3::Builder::OPF::Spine->new;
     };
 }
 
