@@ -6,6 +6,7 @@ use Smart::Args;
 use File::Spec::Functions qw/catfile/;
 use File::Slurp ();
 use Encode;
+use Text::MicroTemplate::DataSection;
 
 sub new {
     args(
@@ -55,20 +56,21 @@ sub add {
 sub build {
     my $self = shift;
 
-    my $metadata = $self->metadata->build;
-    my $manifest = $self->manifest->build;
-    my $spine = $self->spine->build;
+    my $mt = Text::MicroTemplate::DataSection->new(
+        escape_func => undef
+    );
 
-    <<"OPF";
-<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="identifier0" version="3.0">
+    my $opf = $mt->render('opf', {
+        unique_identifier => 'identifier0',
+        version  => '3.0',
+        lang     => $self->metadata->lang,
+        metadata => $self->metadata->build,
+        manifest => $self->manifest->build,
+        spine    => $self->spine->build,
+    });
 
-$metadata
-$manifest
-$spine
+    return join("\n", '<?xml version="1.0" encoding="UTF-8"?>', $opf);
 
-</package>
-OPF
 
 }
 
@@ -105,5 +107,23 @@ sub spine {
 }
 
 
-
 1;
+
+__DATA__
+
+@@ opf
+<package
+  xmlns="http://www.idpf.org/2007/opf"
+  unique-identifier="<?= $_[0]->{unique_identifier} ?>"
+  version="<?= $_[0]->{version} ?>"
+  xml:lang="<?= $_[0]->{lang} ?>"
+? if ( $_[0]->{lang} eq 'ja' ) {
+  prefix="ebpaj: http://www.ebpaj.jp/"
+? }
+>
+
+<?= $_[0]->{metadata} ?>
+<?= $_[0]->{manifest} ?>
+<?= $_[0]->{spine} ?>
+
+</package>

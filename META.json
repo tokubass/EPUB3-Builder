@@ -48,6 +48,7 @@
             "File::Slurp" : "0",
             "Mouse::Util::TypeConstraints" : "0",
             "Smart::Args" : "0",
+            "Text::MicroTemplate::DataSection" : "0",
             "parent" : "0",
             "perl" : "5.008005"
          }

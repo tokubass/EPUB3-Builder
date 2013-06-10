@@ -6,6 +6,7 @@ requires 'File::Slurp', '0';
 requires 'Carp', '0';
 requires 'Class::Accessor::Lite', '0';
 requires 'Data::UUID', '0';
+requires 'Text::MicroTemplate::DataSection', '0';
 
 
 on 'test' => sub {
